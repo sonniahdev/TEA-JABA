@@ -268,8 +268,6 @@
     </div>
     
     <script>
-
-
         // Three.js Background Animation
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -373,7 +371,7 @@
             if (type === 'products') {
                 section.innerHTML = `
                     <h2 class="section-title">Jaba Collection</h2>
-                    <div class="product-grid" id="productGrid"></div>
+                    <div class="product-grid" id="productGrid" style="max-width: 100%; margin: 0 auto;"></div>
                 `;
                 
                 document.getElementById('contentContainer').appendChild(section);
@@ -382,31 +380,38 @@
                 products.forEach(product => {
                     const productCard = document.createElement('div');
                     productCard.className = 'product-card';
+                    // Add inline styles for responsive card width and centering
+                    productCard.style.maxWidth = window.innerWidth <= 768 ? '90%' : '350px';
+                    productCard.style.margin = window.innerWidth <= 768 ? '0 auto 1rem auto' : '0';
+                    
+                    // Calculate responsive image height based on viewport width
+                    const imageHeight = window.innerWidth <= 768 ? Math.min(window.innerWidth * 0.5, 180) : 192; // 50% of viewport width, max 180px on mobile
                     productCard.innerHTML = `
-                        <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold mb-2">${product.name}</h3>
-                            <p class="text-gray-300 mb-4">${product.description}</p>
+                        <img src="${product.image}" alt="${product.name}" style="width: 100%; height: ${imageHeight}px; object-fit: cover; object-position: center;">
+                        <div class="p-6" style="${window.innerWidth <= 768 ? 'padding: 1rem;' : ''}">
+                            <h3 class="text-xl font-bold mb-2 ${window.innerWidth <= 768 ? 'text-base' : ''}">${product.name}</h3>
+                            <p class="text-gray-300 mb-4 ${window.innerWidth <= 768 ? 'text-sm' : ''}">${product.description}</p>
                             <div class="flex justify-between items-center">
-                                <span class="text-lg font-bold text-green-400">${product.price}</span>
-<a href="https://wa.me/254731373048?text=${encodeURIComponent(
-  `Hi! I'm interested in ordering: ${product.name} (${product.price}).
-  
-Please confirm availability.
-
-Payment options:
-• M-Pesa Till Number: 123456
-• Paybill: 987654 (Account: JABA)
-
-Once paid, I’ll send my delivery details.
-
-Thanks!`
-)}"
-target="_blank" 
-class="px-4 py-2 bg-green-600 rounded-full hover:bg-green-700 transition">
-Order
-</a>
-
+                                <span class="text-lg font-bold text-green-400 ${window.innerWidth <= 768 ? 'text-base' : ''}">${product.price}</span>
+                                <a href="https://wa.me/254731373048?text=${encodeURIComponent(
+                                    `Hi! I'm interested in ordering: ${product.name} (${product.price}).
+                                    
+                                    Please confirm availability.
+                                    
+                                    Payment options:
+                                    • M-Pesa Till Number: 123456
+                                    • Paybill: 987654 (Account: JABA)
+                                    
+                                    Once paid, I’ll send my delivery details.
+                                    
+                                    Thanks!`
+                                )}"
+                                target="_blank" 
+                                class="px-4 py-2 bg-green-600 rounded-full hover:bg-green-700 transition ${window.innerWidth <= 768 ? 'px-3 py-1 text-sm' : ''}">
+                                    Order
+                                </a>
+                            </div>
+                        </div>
                     `;
                     productGrid.appendChild(productCard);
                     
@@ -474,14 +479,12 @@ Order
             return section;
         }
         
-        // Load all content at once
-      // Load all content at once in custom order
-function loadAllContent() {
-    createContentSection('about');
-    createContentSection('products');
-    createContentSection('testimonials');
-}
-
+        // Load all content at once in custom order
+        function loadAllContent() {
+            createContentSection('about');
+            createContentSection('products');
+            createContentSection('testimonials');
+        }
         
         // Interactive Tea Button
         document.getElementById('teaButton').addEventListener('click', function() {
@@ -577,6 +580,21 @@ function loadAllContent() {
                         scrub: true
                     }
                 });
+            });
+    
+            // Update product card layouts on resize
+            window.addEventListener('resize', () => {
+                const productCards = document.querySelectorAll('.product-card');
+                productCards.forEach(card => {
+                    card.style.maxWidth = window.innerWidth <= 768 ? '90%' : '350px';
+                    card.style.margin = window.innerWidth <= 768 ? '0 auto 1rem auto' : '0';
+                    const image = card.querySelector('img');
+                    const imageHeight = window.innerWidth <= 768 ? Math.min(window.innerWidth * 0.5, 180) : 192;
+                    image.style.height = `${imageHeight}px`;
+                });
+                const productGrid = document.getElementById('productGrid');
+                productGrid.style.maxWidth = '100%';
+                productGrid.style.margin = '0 auto';
             });
         });
     </script>
