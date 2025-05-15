@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jaba Tea Collection</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --color-primary: #10b981;
+            --color-secondary: #a3e635;
+            --color-accent: #22c55e;
+        }
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        
+     
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            
+            background-color: #000;
+            color: white;
+        }
+        
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-title {
+            font-size: 6rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            margin-bottom: 2rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            max-width: 600px;
+            text-align: center;
+            opacity: 0.9;
+            margin-bottom: 3rem;
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+            40% { transform: translateY(-20px) translateX(-50%); }
+            60% { transform: translateY(-10px) translateX(-50%); }
+        }
+        
+        .product-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+        }
+        
+        .infinite-scroll-container {
+            position: relative;
+            padding: 5rem 0;
+        }
+        
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .floating-leaf {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: var(--color-accent);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            opacity: 0.7;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .interactive-tea {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--color-primary), var(--color-secondary));
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.7);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .interactive-tea:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.9);
+        }
+        
+        .parallax-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            will-change: transform;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+        
+        .floating-island {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 3rem;
+            margin: 2rem 0;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform-style: preserve-3d;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 3rem 0;
+        }
+        
+        .social-link {
+            font-size: 2rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            color: var(--color-primary);
+            transform: translateY(-5px);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .social-links {
+                gap: 1.5rem;
+            }
+            
+            .social-link {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Three.js Canvas Container -->
+    <div id="canvas-container"></div>
+    
+    <!-- Interactive Tea Button -->
+    <div class="interactive-tea" id="teaButton">
+        Brew Me!
+    </div>
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="parallax-layer" data-depth="0.1"></div>
+        <div class="parallax-layer" data-depth="0.3"></div>
+        
+        <h1 class="hero-title">JABA TEA</h1>
+        <p class="hero-subtitle">Experience the infinite energy of nature's most vibrant leaves in our never-ending collection</p>
+        
+        <div class="scroll-indicator">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
+            </svg>
+        </div>
+    </section>
+    
+    <!-- Content Container -->
+    <div class="infinite-scroll-container" id="contentContainer">
+        <!-- Content will be added here -->
+    </div>
+    
+    <!-- Social Links -->
+    <div class="social-links">
+        <a href="https://instagram.com/yourusername" target="_blank" class="social-link">
+            <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://tiktok.com/@yourusername" target="_blank" class="social-link">
+            <i class="fab fa-tiktok"></i>
+        </a>
+        <a href="https://linkedin.com/in/yourusername" target="_blank" class="social-link">
+            <i class="fab fa-linkedin"></i>
+        </a>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2023 Jaba Tea. All rights reserved.</p>
+    </div>
+    
+    <script>
+
+
+        // Three.js Background Animation
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+        
+        // Create floating particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particleCount = 1000;
+        
+        const posArray = new Float32Array(particleCount * 3);
+        for(let i = 0; i < particleCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 10;
+        }
+        
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.02,
+            color: 0x10b981,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+        
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+        
+        camera.position.z = 3;
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            particlesMesh.rotation.x += 0.0005;
+            particlesMesh.rotation.y += 0.0005;
+            
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // Mock product data
+        const products = [
+            { name: "Organic Jaba Bundle", description: "Natural boost pack", image: "images/products/PXL_20250109_053256718.MP.jpg", price: "Ksh:500" },
+            { name: "Organic Jaba Bundle", description: "Natural boost pack", image: "images/products/PXL_20250109_053306843.jpg", price: "Ksh:800" },
+            { name: "Organic Jaba Bundle", description: "Natural boost pack", image: "images/products/PXL_20250109_053557714.MP.jpg", price: "Ksh:500" },
+            { name: "Organic Jaba Bundle", description: "Natural boost pack", image: "images/products/PXL_20250109_053810500.MP.jpg", price: "Ksh:800" },
+            { name: "Organic Jaba Bundle", description: "Natural boost pack", image: "images/products/PXL_20250109_053306843.jpg", price: "Ksh:500" },
+            { name: "Organic Jaba Bundle", description: "Natural boost pack", image: "images/products/PXL_20250109_054053032.MP.jpg", price: "Ksh:800" },
+            { name: "Jaba Tea Powder", description: "Fine ground mirra", image: "images/products/PXL_20250109_054151069.MP.jpg", price: "Ksh:500" },
+            { name: "Jaba Energy Mix", description: "Enhanced mirra blend", image: "images/products/PXL_20250109_053240702.MP.jpg", price: "Ksh:500" }
+        ];
+        
+        // Create floating leaves
+        function createFloatingLeaves() {
+            for (let i = 0; i < 20; i++) {
+                const leaf = document.createElement('div');
+                leaf.className = 'floating-leaf';
+                document.body.appendChild(leaf);
+                
+                const startX = Math.random() * window.innerWidth;
+                const startY = Math.random() * window.innerHeight;
+                const rotation = Math.random() * 360;
+                const duration = 10 + Math.random() * 20;
+                const delay = Math.random() * 5;
+                
+                gsap.set(leaf, {
+                    x: startX,
+                    y: startY,
+                    rotation: rotation,
+                    scale: 0.5 + Math.random()
+                });
+                
+                gsap.to(leaf, {
+                    x: startX + (Math.random() - 0.5) * 200,
+                    y: startY + (Math.random() - 0.5) * 200,
+                    rotation: rotation + (Math.random() - 0.5) * 180,
+                    duration: duration,
+                    delay: delay,
+                    ease: "sine.inOut",
+                    yoyo: true,
+                    repeat: -1,
+                    repeatDelay: delay
+                });
+            }
+        }
+        
+        // Create content section
+        function createContentSection(type) {
+            const section = document.createElement('div');
+            section.className = 'floating-island';
+            
+            if (type === 'products') {
+                section.innerHTML = `
+                    <h2 class="section-title">Jaba Collection</h2>
+                    <div class="product-grid" id="productGrid"></div>
+                `;
+                
+                document.getElementById('contentContainer').appendChild(section);
+                
+                const productGrid = document.getElementById('productGrid');
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    productCard.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2">${product.name}</h3>
+                            <p class="text-gray-300 mb-4">${product.description}</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold text-green-400">${product.price}</span>
+<a href="https://wa.me/254731373048?text=${encodeURIComponent(
+  `Hi! I'm interested in ordering: ${product.name} (${product.price}).
+  
+Please confirm availability.
+
+Payment options:
+• M-Pesa Till Number: 123456
+• Paybill: 987654 (Account: JABA)
+
+Once paid, I’ll send my delivery details.
+
+Thanks!`
+)}"
+target="_blank" 
+class="px-4 py-2 bg-green-600 rounded-full hover:bg-green-700 transition">
+Order
+</a>
+
+                    `;
+                    productGrid.appendChild(productCard);
+                    
+                    gsap.from(productCard, {
+                        opacity: 0,
+                        y: 50,
+                        duration: 0.8,
+                        scrollTrigger: {
+                            trigger: productCard,
+                            start: "top 80%",
+                            toggleActions: "play none none none"
+                        }
+                    });
+                });
+            } else if (type === 'about') {
+                section.innerHTML = `
+                    <h2 class="section-title">The Jaba Story</h2>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <p class="mb-4">Jaba Tea has been cultivated for centuries in the lush highlands, where the perfect combination of altitude, soil, and climate creates leaves with unparalleled vitality.</p>
+                            <p class="mb-4">Our master growers use traditional techniques passed down through generations to ensure each leaf reaches its full potential.</p>
+                        </div>
+                        <div class="flex items-center justify-center">
+                            <div class="w-full h-64 bg-green-900/30 rounded-xl flex items-center justify-center">
+                                <span class="text-2xl">🌿 Tradition Meets Innovation 🌿</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('contentContainer').appendChild(section);
+                
+                gsap.from(section, {
+                    opacity: 0,
+                    y: 50,
+                    duration: 0.8,
+                    scrollTrigger: {
+                        trigger: section,
+                        start: "top 80%",
+                        toggleActions: "play none none none"
+                    }
+                });
+            } else if (type === 'testimonials') {
+                section.innerHTML = `
+                    <h2 class="section-title">Jaba Experiences</h2>
+                    <div class="bg-white/5 p-6 rounded-xl max-w-2xl mx-auto">
+                        <div class="text-yellow-400 text-2xl mb-2">★★★★★</div>
+                        <p class="mb-4">"The energy boost is incredible! I've never felt more focused and alive. Jaba Tea has completely transformed my daily routine."</p>
+                        <div class="font-bold">- Sarah K.</div>
+                    </div>
+                `;
+                document.getElementById('contentContainer').appendChild(section);
+                
+                gsap.from(section, {
+                    opacity: 0,
+                    y: 50,
+                    duration: 0.8,
+                    scrollTrigger: {
+                        trigger: section,
+                        start: "top 80%",
+                        toggleActions: "play none none none"
+                    }
+                });
+            }
+            
+            return section;
+        }
+        
+        // Load all content at once
+      // Load all content at once in custom order
+function loadAllContent() {
+    createContentSection('about');
+    createContentSection('products');
+    createContentSection('testimonials');
+}
+
+        
+        // Interactive Tea Button
+        document.getElementById('teaButton').addEventListener('click', function() {
+            // Create a tea brewing animation
+            const teaBubble = document.createElement('div');
+            teaBubble.style.position = 'fixed';
+            teaBubble.style.width = '0';
+            teaBubble.style.height = '0';
+            teaBubble.style.backgroundColor = '#10b981';
+            teaBubble.style.borderRadius = '50%';
+            teaBubble.style.pointerEvents = 'none';
+            teaBubble.style.zIndex = '99';
+            teaBubble.style.left = '50%';
+            teaBubble.style.top = '50%';
+            teaBubble.style.transform = 'translate(-50%, -50%)';
+            teaBubble.style.opacity = '0.8';
+            document.body.appendChild(teaBubble);
+            
+            gsap.to(teaBubble, {
+                width: '150vw',
+                height: '150vw',
+                opacity: 0,
+                duration: 2,
+                ease: 'power2.out',
+                onComplete: () => teaBubble.remove()
+            });
+            
+            // Add floating tea leaves
+            for (let i = 0; i < 30; i++) {
+                const leaf = document.createElement('div');
+                leaf.className = 'floating-leaf';
+                leaf.style.position = 'fixed';
+                leaf.style.left = '50%';
+                leaf.style.top = '50%';
+                leaf.style.zIndex = '100';
+                document.body.appendChild(leaf);
+                
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 100 + Math.random() * 200;
+                const duration = 1 + Math.random() * 2;
+                
+                gsap.to(leaf, {
+                    x: `+=${Math.cos(angle) * distance}`,
+                    y: `+=${Math.sin(angle) * distance}`,
+                    rotation: Math.random() * 360,
+                    opacity: 0,
+                    duration: duration,
+                    ease: 'power2.out',
+                    onComplete: () => leaf.remove()
+                });
+            }
+            
+            // Play sound if available
+            if (typeof Audio !== 'undefined') {
+                const bubbleSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-bubbles-in-water-1164.mp3');
+                bubbleSound.volume = 0.3;
+                bubbleSound.play().catch(e => console.log('Audio play failed:', e));
+            }
+        });
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            createFloatingLeaves();
+            loadAllContent();
+            
+            // Animate hero elements
+            gsap.from('.hero-title', {
+                opacity: 0,
+                y: 50,
+                duration: 1.5,
+                ease: 'power3.out'
+            });
+            
+            gsap.from('.hero-subtitle', {
+                opacity: 0,
+                y: 30,
+                duration: 1.5,
+                delay: 0.3,
+                ease: 'power3.out'
+            });
+            
+            // Parallax effect for hero section
+            const parallaxLayers = document.querySelectorAll('.parallax-layer');
+            parallaxLayers.forEach(layer => {
+                const depth = parseFloat(layer.getAttribute('data-depth'));
+                
+                gsap.to(layer, {
+                    y: 100 * depth,
+                    scrollTrigger: {
+                        trigger: '.hero-section',
+                        start: 'top top',
+                        end: 'bottom top',
+                        scrub: true
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
