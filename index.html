@@ -312,16 +312,50 @@
         });
         
         // Mock product data
-        const products = [
-            { name: "Organic Jaba Bundle", description: "Natural boost pack", image: "images/products/PXL_20250109_053256718.MP.jpg", price: "Ksh:500" },
-            { name: "Organic Jaba Bundle", description: "Natural boost pack", image: "images/products/PXL_20250109_053306843.jpg", price: "Ksh:800" },
-            { name: "Organic Jaba Bundle", description: "Natural boost pack", image: "images/products/PXL_20250109_053557714.MP.jpg", price: "Ksh:500" },
-            { name: "Organic Jaba Bundle", description: "Natural boost pack", image: "images/products/PXL_20250109_053810500.MP.jpg", price: "Ksh:800" },
-            { name: "Organic Jaba Bundle", description: "Natural boost pack", image: "images/products/PXL_20250109_053306843.jpg", price: "Ksh:500" },
-            { name: "Organic Jaba Bundle", description: "Natural boost pack", image: "images/products/PXL_20250109_054053032.MP.jpg", price: "Ksh:800" },
-            { name: "Jaba Tea Powder", description: "Fine ground mirra", image: "images/products/PXL_20250109_054151069.MP.jpg", price: "Ksh:500" },
-            { name: "Jaba Energy Mix", description: "Enhanced mirra blend", image: "images/products/PXL_20250109_053240702.MP.jpg", price: "Ksh:500" }
-        ];
+       const products = [
+    { 
+        name: "Jaba Classic Pack", 
+        description: "Original natural boost", 
+        image: "images/products/PXL_20250109_053256718.MP.jpg", 
+        price: "Ksh:500" 
+    },
+    { 
+        name: "Jaba Premium Pack", 
+        description: "Stronger energy blend", 
+        image: "images/products/PXL_20250109_053306843.jpg", 
+        price: "Ksh:800" 
+    },
+    { 
+        name: "Jaba Herbal Selection", 
+        description: "Carefully selected organic leaves", 
+        image: "images/products/PXL_20250109_053557714.MP.jpg", 
+        price: "Ksh:500" 
+    },
+    { 
+        name: "Jaba Power Mix", 
+        description: "High-energy natural fusion", 
+        image: "images/products/PXL_20250109_053810500.MP.jpg", 
+        price: "Ksh:800" 
+    },
+    { 
+        name: "Jaba Reserve Pack", 
+        description: "Premium quality harvest", 
+        image: "images/products/PXL_20250109_054053032.MP.jpg", 
+        price: "Ksh:800" 
+    },
+    { 
+        name: "Jaba Tea Powder", 
+        description: "Fine ground mirra", 
+        image: "images/products/PXL_20250109_054151069.MP.jpg", 
+        price: "Ksh:500" 
+    },
+    { 
+        name: "Jaba Energy Mix", 
+        description: "Enhanced mirra blend", 
+        image: "images/products/PXL_20250109_053240702.MP.jpg", 
+        price: "Ksh:500" 
+    }
+];
         
         // Create floating leaves
         function createFloatingLeaves() {
